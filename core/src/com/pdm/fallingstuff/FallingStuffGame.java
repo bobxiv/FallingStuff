@@ -14,66 +14,115 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Timer;
 
+import java.util.List;
+
 public class FallingStuffGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	Array<Texture> fruitTextures;
 	Array<Sprite> fruitSprites;
-	Texture img;
+	Array<Float> velocidades;
+	Texture backgroundTexture;
+	Sprite backgroundSprite;
 
 	OrthographicCamera camera;
+
+	float gravedad;
+	float frecuenciaAparicion;
 
 	
 	@Override
 	public void create () {
+
+		// ----- Creamos propiedades -----
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
 		fruitTextures = new Array<Texture>();
 		fruitSprites = new Array<Sprite>();
+		velocidades = new Array<Float>();
 
+		// ----- Cargamos Texturas -----
+		fruitTextures.add( new Texture(Gdx.files.internal("Img\\banana.png")));
+		fruitTextures.add( new Texture(Gdx.files.internal("Img\\uvas.png")));
+		fruitTextures.add( new Texture(Gdx.files.internal("Img\\anana.png")));
+		fruitTextures.add( new Texture(Gdx.files.internal("Img\\frutilla.png")));
+		fruitTextures.add( new Texture(Gdx.files.internal("Img\\sandia.png")));
+
+		backgroundTexture = new Texture(Gdx.files.internal("Img\\fondo.png"));
+
+		// ----- Configuracion -----
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 800, 600);
 
+		gravedad = 100;
+
+		frecuenciaAparicion = 3.0f;
+
+		backgroundSprite = new Sprite(backgroundTexture);
+		//backgroundSprite.setPosition(0, 0);
+		float ratio = backgroundTexture.getWidth()/(float)backgroundTexture.getHeight();
+		//backgroundSprite.setSize(600.0f*ratio, 600);
+		backgroundSprite.setBounds(0.0f, 0.0f, 600.0f*ratio, 600.0f);
+
+		// ----- Creamos Timer -----
 		Timer.schedule(new Timer.Task() {
 			@Override
 			public void run() {
-				Sprite aux = new Sprite(img);
-				aux.setPosition(MathUtils.random(0, 800 - img.getWidth()), 600 - img.getHeight());
+				Sprite aux = new Sprite(fruitTextures.get(MathUtils.random(0,4)));
+				aux.setPosition(MathUtils.random(0, 800 - aux.getTexture().getWidth()), 600 /*- aux.getTexture().getHeight()*/);
+				aux.setSize(128, 128);
 				fruitSprites.add(aux);
+				velocidades.add(new Float(0));
 			}
-		}, 0, 3);
+		}, 0, frecuenciaAparicion);
 	}
 
 	@Override
 	public void render () {
 
+		// ----- Eventos -----
+
+		// hay algun toque?
 		if( Gdx.input.isTouched() ) {
-			Vector3 pos = new Vector3();
-			pos.x = Gdx.input.getX();
-			pos.y = Gdx.input.getY();
-			pos.z = 0;
+			// obtenemos la posicion del toque y lo convertimos al mundo
+			Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(pos);
 
-			for(Sprite s: fruitSprites)
+			// hay algun sprite que estemos tocando?
+			for(int s=0; s < fruitSprites.size ; ++s)
 			{
-
-				if( s.getBoundingRectangle().contains(pos.x, pos.y) )
-					fruitSprites.removeValue(s, true);
+				Sprite fruit = fruitSprites.get(s);
+				// si colisiona lo eliminamos
+				if( fruit.getBoundingRectangle().contains(pos.x, pos.y) ) {
+					fruitSprites.removeValue(fruit, true);
+					Float f = velocidades.get(s);
+					velocidades.removeValue(f, true);
+				}
 			}
 		}
 
-		float gravedad = 300;
+		// ----- actualizamos -----
 
-		// actualizamos
-		for(Sprite s: fruitSprites)
+		//Gdx.app.log("Cant", String.valueOf(velocidades.size));
+		// aplicamos la gravedad
+		for(int s=0; s < fruitSprites.size ; ++s)
 		{
-			s.setPosition(s.getX(), s.getY() - gravedad*Gdx.graphics.getDeltaTime()*Gdx.graphics.getDeltaTime());
+			Sprite fruit = fruitSprites.get(s);
+			Float vel = velocidades.get(s);
+			vel -= gravedad*Gdx.graphics.getDeltaTime();
+			fruit.setPosition(fruit.getX(), fruit.getY() + vel * Gdx.graphics.getDeltaTime());
+			velocidades.set(s, vel);
+			//Gdx.app.log("Vel", vel.toString());
 		}
 
-		// dibujamos
+		// ----- dibujamos -----
+
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		// establecemos la matriz de transformacion
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+		// dibujamos fondo
+		backgroundSprite.draw(batch);
+		// dibujamos las frutas
 		for(Sprite s: fruitSprites)
 		{
 			s.draw(batch);
