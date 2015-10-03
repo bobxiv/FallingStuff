@@ -2,6 +2,7 @@ package com.pdm.fallingstuff;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
@@ -84,8 +85,7 @@ public class GameScreen  implements Screen {
             public void run() {
                 Fruit aux = null;
                 float height = 128;
-                switch(MathUtils.random(0, 4))
-                {
+                switch (MathUtils.random(0, 4)) {
                     case 0:
                         aux = new Fruit(FruitType.Banana, height, assets);
                         break;
@@ -120,7 +120,8 @@ public class GameScreen  implements Screen {
         // ----- Eventos -----
 
         // hay algun toque?
-        if( Gdx.input.isTouched() ) {
+        for(int i=0; i < 20 ; ++i)
+        if( Gdx.input.isTouched(i) ) {
             // obtenemos la posicion del toque y lo convertimos al mundo
             Vector3 pos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(pos);
@@ -155,7 +156,6 @@ public class GameScreen  implements Screen {
             f.update();
 
         // ----- dibujamos -----
-
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         // establecemos la matriz de transformacion
@@ -171,7 +171,7 @@ public class GameScreen  implements Screen {
 
         stateTime += delta;
         TextureRegion currentFrame = explotion.getKeyFrame(stateTime, true);
-        game.batch.draw(currentFrame, 50, 50);
+        //game.batch.draw(currentFrame, 50, 50);
         game.batch.end();
     }
 

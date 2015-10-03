@@ -62,8 +62,8 @@ public class Fruit {
     public void update()
     {
         // Symplectic Euler
-        velocity = velocity.mulAdd(WorldConfig.gravity, Gdx.graphics.getDeltaTime());
-        position = position.mulAdd(velocity, Gdx.graphics.getDeltaTime());
+        velocity.mulAdd(WorldConfig.gravity, Gdx.graphics.getDeltaTime());
+        position.mulAdd(velocity, Gdx.graphics.getDeltaTime());
         sprite.setPosition(position.x, position.y);
         //Gdx.app.log("Position", position.toString());
         //Gdx.app.log("Velocity", velocity.toString());
