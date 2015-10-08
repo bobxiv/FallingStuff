@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -54,8 +56,22 @@ public class GameScreen  implements Screen {
 
         assets.load("Img/explosion.png", Texture.class);
 
+        assets.load("SoundFX/woosh.wav", Sound.class);
+        assets.load("Music/theme.mp3", Music.class);
+
+
         // hasta ahora solo estaban encoladas para cargarse y ahora se cargan sincronicamente
         assets.finishLoading();
+
+        // -----    Sacamos sonidos     -----
+
+        hitFX = assets.get("SoundFX/woosh.wav", Sound.class);
+        themeMusic = assets.get("Music/theme.mp3", Music.class);
+
+        themeMusic.setLooping(true);
+        themeMusic.setVolume(0.5f);
+
+        themeMusic.play();
 
         // ----- Configuramos Explosion -----
 
@@ -132,11 +148,13 @@ public class GameScreen  implements Screen {
                 // si colisiona lo eliminamos
                 if( f.isHitting(pos.x, pos.y) ) {
                     fruits.removeValue(f, true);
+                    hitFX.play();
                 }else
                 {
                     Gdx.app.log("Y", String.valueOf(f.getY()));
-                    if( (f.getY()) < 0 )
+                    if( (f.getY()) < 0 ) {
                         fruits.removeValue(f, true);
+                    }
                 }
             }
         }
@@ -144,8 +162,9 @@ public class GameScreen  implements Screen {
         for(Fruit f: fruits)
         {
             //Gdx.app.log("Y", String.valueOf(f.getY()));
-            if( (f.getY()+f.getHeight()) < 0 )
+            if( (f.getY()+f.getHeight()) < 0 ) {
                 fruits.removeValue(f, true);
+            }
         }
 
         //Gdx.app.log("Count", String.valueOf(fruits.size));
@@ -236,5 +255,15 @@ public class GameScreen  implements Screen {
      * Administrador de assets de la pantalla
      */
     private AssetManager assets;
+
+    /**
+     * FX sonido cuando se apreta una fruta
+     */
+    private Sound hitFX;
+
+    /**
+     * Musica de fondo
+     */
+    private Music themeMusic;
     //endregion
 }

@@ -44,6 +44,7 @@ public class FallingStuffGame extends Game {
 
 		// cremos la pantalla de menu y le damos control
 		this.setScreen(new MainMenuScreen(this));
+		//this.setScreen(new TestScreen(this));
 	}
 
 	/**

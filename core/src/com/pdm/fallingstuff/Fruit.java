@@ -140,10 +140,9 @@ public class Fruit {
     //region Propiedades privadas
     /**
      * La velocidad de la fruta en unidades del mundo
-      */
+     */
     private Vector2 velocity;
 
-    //
     /**
      * La posicion de la fruta en unidades del mundo
      */

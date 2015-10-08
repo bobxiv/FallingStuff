@@ -33,7 +33,7 @@ public class MainMenuScreen implements Screen {
 
 
         game.batch.begin();
-            game.font.draw(game.batch, "Bienbenido a Falling Stuff!!! ", 100, 150);
+            game.font.draw(game.batch, "Bienvenido a Falling Stuff!!! ", 100, 150);
             game.font.draw(game.batch, "Presione en cualquier parte para comenzar!", 100, 100);
         game.batch.end();
 
